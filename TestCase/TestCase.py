@@ -88,4 +88,4 @@ class TestcontentActivity:
         account_data = r.json()
         assert r.status_code == 200
         assert account_data["message"] == "OK!"
-        logger.info("添加活动成功")
+        logger.info("添加活动成功1")
