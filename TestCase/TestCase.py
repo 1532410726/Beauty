@@ -75,7 +75,7 @@ class TestcontentActivity:
             'Content-Type': 'application/json'
         }
         current_date = datetime.date.today()
-        strtime = current_date + datetime.timedelta(days=2)
+        strtime = current_date + datetime.timedelta(days=3)
         endtime = current_date + datetime.timedelta(days=1)
 
         body = {
