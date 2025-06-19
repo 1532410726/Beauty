@@ -81,7 +81,7 @@ class TestcontentActivity:
         body = {
             "activityPublishTimeStr": f"{strtime}",
             "activityRegisterEndTimeStr": f"{endtime}",
-            "hotActivityName": "测试",
+            "hotActivityName": f"测试，{endtime}",
             "incentiveScheme": "1756"
         }
         r = requests.post(url, headers=headers, json=body)
@@ -89,3 +89,38 @@ class TestcontentActivity:
         assert r.status_code == 200
         assert account_data["message"] == "OK!"
         logger.info("添加活动成功1")
+
+    def test_activity_del(self, token):
+        """
+        删除列表第二条数据
+        :param token:
+        :return:
+        """
+        # 查询url
+        search_url = "https://apitest.dingdingclub.com/makeup-film/contentActivity/list"
+        # 删除url
+        delete_url = "https://apitest.dingdingclub.com/makeup-film/contentActivity/delete"
+        headers = {
+            'Authorization': f"{token}",
+            'Content-Type': 'application/json'
+        }
+        body = {
+            "pageNo": "1",
+            "pageSize": "50"
+        }
+        # 调用查询接口
+        r = requests.post(search_url, headers=headers, json=body)
+        account_data = r.json()
+        # 获取列表第二条数据的活动ID，用于后面调用删除接口时传入的ID
+        activity_id = account_data["data"]["content"][1]["activityId"]
+        logger.info(account_data["data"]["content"][1]["activityId"])
+
+        delete_body = [activity_id]
+        # 调用删除接口
+        delete_r = requests.post(delete_url, headers=headers, json=delete_body)
+        delete_data = delete_r.json()
+        logger.info(delete_data)
+
+        # 断言，状态码判断200，mmessage判断OK！
+        assert delete_r.status_code == 200
+        assert delete_data["message"] == "OK!"
