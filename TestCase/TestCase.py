@@ -1,4 +1,4 @@
-import datetime
+from datetime import date, datetime, timedelta
 import json
 import pytest
 import requests
@@ -22,7 +22,7 @@ def token():
     return token
 
 
-class TestcontentActivity:
+class TestContentActivity:
 
     @pytest.mark.parametrize(
         "body", [
@@ -74,14 +74,15 @@ class TestcontentActivity:
             'Authorization': f"{token}",
             'Content-Type': 'application/json'
         }
-        current_date = datetime.date.today()
-        strtime = current_date + datetime.timedelta(days=3)
-        endtime = current_date + datetime.timedelta(days=1)
+        current_date = date.today()
+        strtime = current_date + timedelta(days=3)
+        endtime = current_date + timedelta(days=1)
+        nowtime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         body = {
             "activityPublishTimeStr": f"{strtime}",
             "activityRegisterEndTimeStr": f"{endtime}",
-            "hotActivityName": f"测试，{endtime}",
+            "hotActivityName": f"测试，{nowtime}",
             "incentiveScheme": "1756"
         }
         r = requests.post(url, headers=headers, json=body)
@@ -90,9 +91,54 @@ class TestcontentActivity:
         assert account_data["message"] == "OK!"
         logger.info("添加活动成功1")
 
+    def test_activity_update(self, token):
+        # 查询url
+        search_url = "https://apitest.dingdingclub.com/makeup-film/contentActivity/list"
+        # 更新url
+        update_url = "https://apitest.dingdingclub.com/makeup-film/contentActivity/update"
+        headers = {
+            'Authorization': f"{token}",
+            'Content-Type': 'application/json'
+        }
+        body = {
+            "pageNo": "1",
+            "pageSize": "50"
+        }
+        r = requests.post(search_url, headers=headers, json=body)
+        account_data = r.json()
+
+        activity_id = account_data["data"]["content"][0]["activityId"]
+        nowtime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        update_body = {
+            "createBy": "1747799318597311243",
+            "updateBy": "1747799318597311243",
+            "createByName": "王斌斌",
+            "updateByName": "王斌斌",
+            "createTime": f"{nowtime}",
+            "updateTime": f"{nowtime}",
+            "deleted": 0,
+            "activityId": f"{activity_id}",
+            "hotActivityName": "活动测试",
+            "activityRegisterEndTime": "2025-06-20 00:00:00",
+            "activityPublishTime": "2025-06-21 00:00:00",
+            "activityRegisterEndTimeStr": "2025-06-21 00:00",
+            "activityPublishTimeStr": "2025-06-22 00:00",
+            "activityDesc": "",
+            "remark": "",
+            "flyGroupId": "",
+            "incentiveScheme": "11"
+        }
+        update_r = requests.post(update_url, headers=headers, json=update_body)
+        update_data = update_r.json()
+        logger.info(update_data)
+        assert update_r.status_code == 200
+        assert update_data["message"] == "OK!"
+
+    pass
+
     def test_activity_del(self, token):
         """
-        删除列表第二条数据
+        删除列表第一条数据
         :param token:
         :return:
         """
@@ -112,8 +158,8 @@ class TestcontentActivity:
         r = requests.post(search_url, headers=headers, json=body)
         account_data = r.json()
         # 获取列表第二条数据的活动ID，用于后面调用删除接口时传入的ID
-        activity_id = account_data["data"]["content"][1]["activityId"]
-        logger.info(account_data["data"]["content"][1]["activityId"])
+        activity_id = account_data["data"]["content"][0]["activityId"]
+        logger.info(account_data["data"]["content"][0]["activityId"])
 
         delete_body = [activity_id]
         # 调用删除接口
@@ -121,6 +167,6 @@ class TestcontentActivity:
         delete_data = delete_r.json()
         logger.info(delete_data)
 
-        # 断言，状态码判断200，mmessage判断OK！
+        # 断言，状态码判断200，message判断OK！
         assert delete_r.status_code == 200
         assert delete_data["message"] == "OK!"
