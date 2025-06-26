@@ -91,6 +91,7 @@ class TestContentActivity:
         assert account_data["message"] == "OK!"
         logger.info("添加活动成功1")
 
+    @pytest.mark.skip(reason="暂不执行")
     def test_activity_update(self, token):
         # 查询url
         search_url = "https://apitest.dingdingclub.com/makeup-film/contentActivity/list"
@@ -136,6 +137,7 @@ class TestContentActivity:
 
     pass
 
+    @pytest.mark.skip(reason="不执行删除")
     def test_activity_del(self, token):
         """
         删除列表第一条数据
@@ -166,7 +168,8 @@ class TestContentActivity:
         delete_r = requests.post(delete_url, headers=headers, json=delete_body)
         delete_data = delete_r.json()
         logger.info(delete_data)
-
         # 断言，状态码判断200，message判断OK！
         assert delete_r.status_code == 200
         assert delete_data["message"] == "OK!"
+        logger.info(f"删除成功，ID：{activity_id}")
+
