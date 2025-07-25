@@ -173,3 +173,31 @@ class TestContentActivity:
         assert delete_data["message"] == "OK!"
         logger.info(f"删除成功，ID：{activity_id}")
 
+    def test_business_search(self, token):
+        # 商单列表url
+        business_url = "https://apitest.dingdingclub.com/makeup-film/contentBusiness/list"
+        headers = {
+            'Authorization': f"{token}",
+            'Content-Type': 'application/json'
+        }
+        body = {
+            "cTime": [],
+            "platformCode": "",
+            "rTime": ["2025-06-03", "2025-08-02"],
+            "startReleaseTime": "2025-06-03",
+            "endReleaseTime": "2025-08-02",
+            "startCreateTime": "",
+            "endCreateTime": "",
+            "teamUserIdList": [],
+            "cancelOrderCode": "NO",
+            "pageSize": 50,
+            "pageNo": 1
+        }
+        r = requests.post(business_url, headers=headers, json=body)
+        account_data = r.json()
+        assert r.status_code == 200
+        assert account_data["message"] == "OK!"
+        # 优化respond数据内容
+        logger.info(json.dumps(account_data, indent=4, ensure_ascii=False))
+        logger.info("商单查询成功")
+        pass
