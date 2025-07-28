@@ -2,6 +2,7 @@ from datetime import date, datetime, timedelta
 import json
 import pytest
 import requests
+import allure
 from utils.log_utils import logger
 
 

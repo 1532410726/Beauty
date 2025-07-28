@@ -2,6 +2,7 @@ from datetime import date, datetime, timedelta
 import json
 import pytest
 import requests
+import allure
 from utils.log_utils import logger
 
 
@@ -23,6 +24,8 @@ def token():
 
 
 class TestBoss:
+    @allure.title("总览查询")
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize("month", ["2025-05", "2025-06", "2025-07"])
     def test_search_zonglan(self, token, month):
         url = "https://apitest.dingdingclub.com/boss/boss/empEfficiency/hr/getHrJobHenEfficiencySummary"
@@ -39,6 +42,8 @@ class TestBoss:
         assert account_data["message"] == "OK!"
         logger.info(f"{month}招聘总览查询成功")
 
+    @allure.title("人效查询")
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize("month", ["2025-05", "2025-06", "2025-07"])
     def test_search_renxiao(self, token, month):
         url = "https://apitest.dingdingclub.com/boss/boss/empEfficiency/hr/getHrJobHenEfficiencyHrUser"
@@ -55,6 +60,8 @@ class TestBoss:
         assert account_data["message"] == "OK!"
         logger.info(f"{month}招聘人效查询成功")
 
+    @allure.title("部门查询")
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize("month", ["2025-05", "2025-06", "2025-07"])
     def test_search_bumen(self, token, month):
         url = "https://apitest.dingdingclub.com/boss/boss/empEfficiency/hr/getDeptRecruitmentProgress"
@@ -71,6 +78,8 @@ class TestBoss:
         assert account_data["message"] == "OK!"
         logger.info(f"{month}部门招聘进度查询成功")
 
+    @allure.title("渠道查询")
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize("month", ["2025-05", "2025-06", "2025-07"])
     def test_search_qudao(self, token, month):
         url = "https://apitest.dingdingclub.com/boss/boss/empEfficiency/hr/getChannelAnalysis"
@@ -87,6 +96,8 @@ class TestBoss:
         assert account_data["message"] == "OK!"
         logger.info(f"{month}渠道分析查询成功")
 
+    @allure.title("面试官查询")
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize("month", ["2025-05", "2025-06", "2025-07"])
     def test_search_mianshiguan(self, token, month):
         url = "https://apitest.dingdingclub.com/boss/boss/empEfficiency/hr/getInterviewerAnalysis"
@@ -103,6 +114,8 @@ class TestBoss:
         assert account_data["message"] == "OK!"
         logger.info(f"{month}面试官分析查询成功")
 
+    @allure.title("人员变化查询")
+    @allure.severity(allure.severity_level.CRITICAL)
     @pytest.mark.parametrize("month", ["2025-05", "2025-06", "2025-07"])
     def test_search_renyuanbianhua(self, token, month):
         url = "https://apitest.dingdingclub.com/boss/boss/empEfficiency/hr/getUserChange"
