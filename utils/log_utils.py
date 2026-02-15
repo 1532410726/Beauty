@@ -1,45 +1,57 @@
-# 配置日志
+"""日志配置模块"""
 import logging
 import os
+from datetime import datetime
+from logging.handlers import TimedRotatingFileHandler
 
-from logging.handlers import RotatingFileHandler
+# 日志级别配置（可通过环境变量修改）
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
 
-# 绑定绑定句柄到logger对象
+# 获取logger对象
 logger = logging.getLogger(__name__)
-# 获取当前工具文件所在的路径
-root_path = os.path.dirname(os.path.abspath(__file__))
-# 拼接当前要输出日志的路径
-log_dir_path = os.sep.join([root_path, '..', f'/logs'])
-if not os.path.isdir(log_dir_path):
-    os.makedirs(log_dir_path, exist_ok=True)  # 使用makedirs更安全
 
-# 创建日志记录器，指明日志保存路径,每个日志的大小，保存日志的上限，并指定编码
-file_log_handler = RotatingFileHandler(
-    os.sep.join([log_dir_path, 'log.log']),
-    maxBytes=1024 * 1024,
-    backupCount=10,
-    encoding='utf-8'  # 指定UTF-8编码
-)
+# 防止重复添加handler
+if not logger.handlers:
+    # 获取项目根目录路径
+    root_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# 设置日志的格式
-date_string = '%Y-%m-%d %H:%M:%S'
-formatter = logging.Formatter(
-    '[%(asctime)s] [%(levelname)s] [%(filename)s]/[line: %(lineno)d]/[%(funcName)s] %(message)s ',
-    date_string
-)
+    # 创建logs目录
+    log_dir_path = os.path.join(root_path, 'logs')
+    os.makedirs(log_dir_path, exist_ok=True)
 
-# 日志输出到控制台的句柄
-stream_handler = logging.StreamHandler()
-# 为控制台输出指定编码（可选，通常不需要）
-# stream_handler = logging.StreamHandler(encoding='utf-8')
+    # 日志文件名包含日期
+    log_file = os.path.join(log_dir_path, f'test_{datetime.now().strftime("%Y%m%d")}.log')
 
-# 将日志记录器指定日志的格式
-file_log_handler.setFormatter(formatter)
-stream_handler.setFormatter(formatter)
+    # 创建按时间分割的日志处理器（每天凌晨分割，保留30天）
+    file_log_handler = TimedRotatingFileHandler(
+        log_file,
+        when='midnight',
+        interval=1,
+        backupCount=30,
+        encoding='utf-8'
+    )
+    # 日志文件名后缀格式
+    file_log_handler.suffix = "%Y%m%d"
 
-# 为全局的日志工具对象添加日志记录器
-logger.addHandler(stream_handler)
-logger.addHandler(file_log_handler)
+    # 设置日志格式
+    formatter = logging.Formatter(
+        '[%(asctime)s] [%(levelname)s] [%(filename)s:%(lineno)d] [%(funcName)s] %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
 
-# 设置日志输出级别
-logger.setLevel(level=logging.INFO)
+    # 控制台输出处理器
+    stream_handler = logging.StreamHandler()
+
+    # 应用格式
+    file_log_handler.setFormatter(formatter)
+    stream_handler.setFormatter(formatter)
+
+    # 添加处理器
+    logger.addHandler(stream_handler)
+    logger.addHandler(file_log_handler)
+
+    # 设置日志级别
+    logger.setLevel(getattr(logging, LOG_LEVEL.upper(), logging.INFO))
+
+    # 防止日志向上传播
+    logger.propagate = False

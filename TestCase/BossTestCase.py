@@ -9,10 +9,10 @@ from utils.log_utils import logger
 @pytest.fixture(scope="module")
 def token():
     """获取token的fixture，整个模块只执行一次"""
-    proxies = {
-        'http': 'http://127.0.0.1:8888',  # 抓包工具的HTTP代理地址
-        'https': 'http://127.0.0.1:8888',  # 抓包工具的HTTPS代理地址（通常与HTTP相同）
-    }
+    # proxies = {
+    #     'http': 'http://127.0.0.1:8888',  # 抓包工具的HTTP代理地址
+    #     'https': 'http://127.0.0.1:8888',  # 抓包工具的HTTPS代理地址（通常与HTTP相同）
+    # }
     sms_url = "https://apitest.dingdingclub.com/auth/auth/send-sms-login-code?phone=15367494408"
     requests.get(sms_url)
     url = "https://apitest.dingdingclub.com/auth/auth/sms-login?phone=15367494408&code=123456"
